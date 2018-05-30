@@ -18,7 +18,22 @@ namespace Demo
             InitializeComponent();
             this.KeyPreview = true;
             SoundPlayer.Load();
+
+            lblIndexI.AutoSize = true;
+            lblIndexJ.AutoSize = true;
+            lblTemp.AutoSize = true;
+
+            lblIndexI.Font = new Font("Tahoma", 13.8F, FontStyle.Bold);
+            lblIndexJ.Font = new Font("Tahoma", 13.8F, FontStyle.Bold);
+            lblTemp.Font = new Font("Tahoma", 13.8F, FontStyle.Bold);
         }
+
+        Label lblIndexI = new Label();
+        Label lblIndexJ = new Label();
+        Label lblTemp = new Label();
+        string strTemp;
+
+
 
         #region Các thuộc tính
         Random rd = new Random();//dùng để tạo giá trị ngẫu nhiên
@@ -29,7 +44,7 @@ namespace Demo
         int WIDTH;//Lưu khoảng cách mà 2 button đổi chỗ cho nhau
         int SIZE = 50;//size của 1 button động được tạo ra
         int speed;//Lưu tốc độ thực hiện các thuật toán
-        bool Giam = false;//kiểm tra thuật toán đó thực hiện tăng hay giảm
+        
         #endregion
 
         readonly ManualResetEvent busy = new ManualResetEvent(false);
@@ -49,7 +64,6 @@ namespace Demo
             //grpCode.Enabled = false;
             btnPause.Enabled = false;
             btnStop.Enabled = false;
-            pnButton.Enabled = false;
         }
 
         #region Xử lí Sự kiện Trên Giao Diện
@@ -57,6 +71,7 @@ namespace Demo
         private void btnTaoMang_Click(object sender, EventArgs e)
         {
             PlaySound();
+            btnXoaMang.PerformClick();
             int n = (int)nmSoPhanTu.Value;
             if (n <= 0 || n > 13)
             {
@@ -64,23 +79,35 @@ namespace Demo
                 nmSoPhanTu.Focus();
                 return;
             }
-            int edge = (pnButton.Width - (n * (SIZE + GAP))) / 2;
+            int Edge = (pnButton.Width - (n * (SIZE + GAP))) / 2;
             M = new int[n];
             Mc = new Button[n];
             pnButton.Controls.Clear();
             for (int i = 0; i < n; i++)
             {
                 Button btn = new Button();
+                btn.Enabled = false;
                 btn.Text = 0 + "";
                 btn.Width = btn.Height = SIZE;
                 btn.Location = new Point(
-                    pnButton.Controls.Count * (btn.Width + GAP) + edge,
+                    i * (btn.Width + GAP) + Edge,
                     pnButton.Height / 2 - SIZE / 2);
                 btn.Tag = i;
                 pnButton.Controls.Add(btn);
 
                 M[i] = 0;
                 Mc[i] = btn;
+
+
+                Label lbl = new Label();
+                lbl.Enabled = false;
+                lbl.BackColor = pnButton.BackColor;
+                lbl.AutoSize = true;
+                lbl.Text = i + "";
+                lbl.Location = new Point(btn.Location.X + SIZE / 2 - 10,
+                    pnButton.Height - SIZE / 2);
+                lbl.Font = new Font("Tahoma", 13.8F, FontStyle.Bold);
+                pnButton.Controls.Add(lbl);
             }
             nmIndex.Maximum = n - 1;
         }
@@ -97,7 +124,7 @@ namespace Demo
         private void btnRandom_Click(object sender, EventArgs e)
         {
             PlaySound();
-            if (M==null)
+            if (M == null)
             {
                 MessageBox.Show("Vui lòng tạo mảng trước để thực hiện chức năng này!");
                 return;
@@ -106,7 +133,8 @@ namespace Demo
             {
                 int value = rd.Next(100);
                 M[i] = value;
-                Mc[i].Text = value+"";
+                Mc[i].Text = value + "";
+                Mc[i].BackColor = Color.White;
             }
         }
 
@@ -116,6 +144,11 @@ namespace Demo
             if (M == null)
             {
                 MessageBox.Show("Vui lòng tạo mảng trước để thực hiện chức năng này!");
+                return;
+            }
+            if (txtGiaTri.Text == "") ;
+            {
+                MessageBox.Show("Bạn chưa nhập giá trị :3");
                 return;
             }
             M[(int)nmIndex.Value] = int.Parse(txtGiaTri.Text);
@@ -153,12 +186,6 @@ namespace Demo
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            PlaySound();
-            if (backgroundWorker1.CancellationPending)
-            {
-                StartWorker();
-                return;
-            }
             if (M == null)
             {
                 MessageBox.Show("Bạn chưa tạo mảng");
@@ -172,6 +199,41 @@ namespace Demo
             if (radTangGiam.EditValue == null)
             {
                 MessageBox.Show("Bạn chưa chọn hướng xắp xếp!");
+                return;
+            }
+
+            if (radThuatToan.SelectedIndex == 0)
+            {
+                pnButton.Controls.Add(lblIndexI);
+                pnButton.Controls.Add(lblIndexJ);
+            }
+            else if (radThuatToan.SelectedIndex == 1)
+            {
+                pnButton.Controls.Add(lblIndexI);
+                pnButton.Controls.Add(lblIndexJ);
+                pnButton.Controls.Add(lblTemp);
+                if (radTangGiam.SelectedIndex == 0)
+                    strTemp = "Max=";
+                else
+                    strTemp = "Min=";
+            }
+            else if (radThuatToan.SelectedIndex == 2)
+            {
+                pnButton.Controls.Add(lblIndexI);
+                pnButton.Controls.Add(lblIndexJ);
+                pnButton.Controls.Add(lblTemp);
+                strTemp = "j-1=";
+            }
+            else if (radThuatToan.SelectedIndex == 5)
+            {
+                pnButton.Controls.Add(lblIndexI);
+                pnButton.Controls.Add(lblTemp);
+                strTemp = "j-1=";
+            }
+            PlaySound();
+            if (backgroundWorker1.CancellationPending)
+            {
+                StartWorker();
                 return;
             }
 
@@ -247,7 +309,7 @@ namespace Demo
             DebugCode(v);
             for (int x = 0; x < HEIGHT; x++)
             {
-                backgroundWorker1.ReportProgress(0, st);
+                backgroundWorker1.ReportProgress(3, st);
                 System.Threading.Thread.Sleep(speed);
             }
 
@@ -255,24 +317,24 @@ namespace Demo
             WIDTH = Math.Abs(pos1 - pos2) * (SIZE + GAP);
             for (int x = 0; x < WIDTH; x++)
             {
-                backgroundWorker1.ReportProgress(0, st);
+                backgroundWorker1.ReportProgress(3, st);
                 System.Threading.Thread.Sleep(speed);
             }
 
             st.Type = MoveType.TOP_TO_LINE_AND_BOTTOM_TO_LINE;
             for (int x = 0; x < HEIGHT; x++)
             {
-                backgroundWorker1.ReportProgress(0, st);
+                backgroundWorker1.ReportProgress(3, st);
                 System.Threading.Thread.Sleep(speed);
             }
 
             st.Type = MoveType.CHANGED;
-            backgroundWorker1.ReportProgress(0, st);
+            backgroundWorker1.ReportProgress(3, st);
         }
 
         private void DebugCode(int v)
         {
-            backgroundWorker1.ReportProgress(0, v);
+            backgroundWorker1.ReportProgress(1, v);
             System.Threading.Thread.Sleep(speed * 20);
         }
 
@@ -285,20 +347,175 @@ namespace Demo
                 lsbCode.Items.Add("Sắp Giảm");
             if (thuatToan == 0)
             {
-                lsbCode.Items.Add("void InterchangeSort(int a[], int N )");
+                lsbCode.Items.Add("void InterchangeSort(int M[], int N )");
                 lsbCode.Items.Add("{");
                 lsbCode.Items.Add("\tint i, j;");
                 lsbCode.Items.Add("\tfor (i = 0 ; i<N-1 ; i++)");
                 lsbCode.Items.Add("\t\tfor (j =i+1; j < N ; j++)");
                 if (tangGiam == 1)
                 {
-                    lsbCode.Items.Add("\t\t\tif(a[j ]> a[i])");
+                    lsbCode.Items.Add("\t\t\tif(M[j] > M[i])");
                 }
                 else
                 {
-                    lsbCode.Items.Add("\t\t\tif(a[j ]< a[i])");
+                    lsbCode.Items.Add("\t\t\tif(M[j] < M[i])");
                 }
-                lsbCode.Items.Add("\t\t\t\tSwap(a[i], a[j]);");
+                lsbCode.Items.Add("\t\t\t\tSwap(M[i], M[j]);");
+                lsbCode.Items.Add("}");
+            }
+            else if (thuatToan == 1)
+            {
+                lsbCode.Items.Add("void SelectionSort(int M[], int N)");
+                if (tangGiam == 0)
+                {
+                    lsbCode.Items.Add("{");
+                    lsbCode.Items.Add("\tint min, i, j;");
+                    lsbCode.Items.Add("\tfor(i = 0; i < N - 1; i++)");
+                    lsbCode.Items.Add("\t{");
+                    lsbCode.Items.Add("\t\tmin = i;");
+                    lsbCode.Items.Add("\t\tfor(j = i + 1; j < N; j++)");
+                    lsbCode.Items.Add("\t\t\tif(M[j] > M[min])");
+                    lsbCode.Items.Add("\t\t\t\tmin = j;");
+                    lsbCode.Items.Add("\t\tSwap(M[min], M[i]);");
+                    lsbCode.Items.Add("\t}");
+                    lsbCode.Items.Add("}");
+                }
+                else
+                {
+                    lsbCode.Items.Add("{");
+                    lsbCode.Items.Add("\tint max, i, j;");
+                    lsbCode.Items.Add("\tfor(i = 0; i < N - 1; i++)");
+                    lsbCode.Items.Add("\t{");
+                    lsbCode.Items.Add("\t\tmax = i;");
+                    lsbCode.Items.Add("\t\tfor(j = i + 1; j < N; j++)");
+                    lsbCode.Items.Add("\t\t\tif(M[j] < M[max])");
+                    lsbCode.Items.Add("\t\t\t\tmax = j;");
+                    lsbCode.Items.Add("\t\tSwap(M[max], M[i]);");
+                    lsbCode.Items.Add("\t}");
+                    lsbCode.Items.Add("}");
+                }
+
+            }
+            else if (thuatToan == 2)
+            {
+                lsbCode.Items.Add("void BubbleSort(int M[],int n) ");
+                lsbCode.Items.Add("{");
+                lsbCode.Items.Add("\tint i, j;");
+                lsbCode.Items.Add("\tfor (i = 0 ; i<n-1 ; i++)");
+                lsbCode.Items.Add("\t\tfor (j =n-1; j >i ; j --) ");
+                if (tangGiam == 1)
+                {
+                    lsbCode.Items.Add("\t\t\tif(M[j] > M[j-1])");
+                }
+                else
+                {
+                    lsbCode.Items.Add("\t\t\tif(M[j] < M[i-1])");
+                }
+                lsbCode.Items.Add("\t\t\t\tSwap(M[j], M[j-1]); ");
+                lsbCode.Items.Add("}");
+            }
+            else if (thuatToan == 3)
+            {
+                lsbCode.Items.Add("void InsertionSort(int M[],int n)");
+                lsbCode.Items.Add("{");
+                lsbCode.Items.Add("\tint pos,key;");
+                lsbCode.Items.Add("\tfor(int i=1;i<n;i++)");
+                lsbCode.Items.Add("\t{)");
+                lsbCode.Items.Add("\t\tkey = M[i];)");
+                lsbCode.Items.Add("\t\twhile((pos >= 0) && (M[pos] > key))");
+                lsbCode.Items.Add("\t\t{");
+                lsbCode.Items.Add("\t\t\tM[pos + 1] = M[pos];");
+                lsbCode.Items.Add("\t\t\tpos--; ");
+                lsbCode.Items.Add("\t\t}");
+                lsbCode.Items.Add("\t\tM[pos+1] = key; ");
+                lsbCode.Items.Add("}");
+            }
+            else if (thuatToan == 4)
+            {
+                lsbCode.Items.Add("void QuickSort(int M[], int left, int right)");
+                lsbCode.Items.Add("{");
+                lsbCode.Items.Add("\tint i, j, x;");
+                lsbCode.Items.Add("\tx = M[(left + right) / 2];");
+                lsbCode.Items.Add("\ti = left;");
+                lsbCode.Items.Add("\tj = right;");
+                if (tangGiam == 0)
+                {
+                    lsbCode.Items.Add("\twhile(i < j)");
+                    lsbCode.Items.Add("\t{");
+                    lsbCode.Items.Add("\t\twhile(M[i] < x) i++;");
+                    lsbCode.Items.Add("\t\twhile(M[j] > x) j--;");
+                    lsbCode.Items.Add("\t\tif(i <= j)");
+                    lsbCode.Items.Add("\t\t{");
+                    lsbCode.Items.Add("\t\t\tSwap(M[i], M[j]);");
+                    lsbCode.Items.Add("\t\t\ti++; j--;");
+                    lsbCode.Items.Add("\t\t}");
+                    lsbCode.Items.Add("\t}");
+                    lsbCode.Items.Add("\tif(left < j)");
+                    lsbCode.Items.Add("\t\t QuickShort(a, left, j);");
+                    lsbCode.Items.Add("\tif(i < right");
+                    lsbCode.Items.Add("\t\tQuickSort(a, i, right);");
+                    lsbCode.Items.Add("}");
+                }
+                else
+                {
+                    lsbCode.Items.Add("\twhile(i < j)");
+                    lsbCode.Items.Add("\t{");
+                    lsbCode.Items.Add("\t\twhile(M[i] > x) i++;");
+                    lsbCode.Items.Add("\t\twhile(M[j] < x) j--;");
+                    lsbCode.Items.Add("\t\tif(i <= j)");
+                    lsbCode.Items.Add("\t\t{");
+                    lsbCode.Items.Add("\t\t\tSwap(M[i], M[j]);");
+                    lsbCode.Items.Add("\t\t\ti++; j--;");
+                    lsbCode.Items.Add("\t\t}");
+                    lsbCode.Items.Add("\t}");
+                    lsbCode.Items.Add("\tif(left > j)");
+                    lsbCode.Items.Add("\t\t QuickShort(a, left, j);");
+                    lsbCode.Items.Add("\tif(i > right");
+                    lsbCode.Items.Add("\t\tQuickSort(a, i, right);");
+                    lsbCode.Items.Add("}");
+                }
+            }
+            else if (thuatToan == 5)
+            {
+                lsbCode.Items.Add("void ShakerSort(int M[], int n)");
+                lsbCode.Items.Add("{");
+                lsbCode.Items.Add("\tint Left = 0, Right = n - 1, k = 0;");
+                lsbCode.Items.Add("\twhile(Left < Right)");
+                lsbCode.Items.Add("\t{");
+                lsbCode.Items.Add("\t\tfor(int i = Left; i < Right; i++)");
+                lsbCode.Items.Add("\t\t{");
+                if (tangGiam == 1)
+                {
+                    lsbCode.Items.Add("\t\t\tif(M[i] < M[i+1])");
+                }
+                else
+                {
+                    lsbCode.Items.Add("\t\t\tif(M[i] > M[i+1])");
+                }
+                lsbCode.Items.Add("\t\t\t{");
+                lsbCode.Items.Add("\t\t\t\tswap(M[i], M[i+1]);");
+                lsbCode.Items.Add("\t\t\t\tk = i;");
+                lsbCode.Items.Add("\t\t\t}");
+                lsbCode.Items.Add("\t\t}");
+                lsbCode.Items.Add("\t\tRight = k;");
+                lsbCode.Items.Add("\t\tfor(int i = Right; i > Left; i--)");
+                lsbCode.Items.Add("\t\t{");
+                if (tangGiam == 1)
+                {
+                    lsbCode.Items.Add("\t\t\tif(M[i] > M[i-1])");
+                }
+                else
+                {
+                    lsbCode.Items.Add("\t\t\tif(M[i] < M[i-1])");
+                }
+                
+                lsbCode.Items.Add("\t\t\t{");
+                lsbCode.Items.Add("\t\t\t\tswap(M[i], M[i-1]);");
+                lsbCode.Items.Add("\t\t\t\tk = i;");
+                lsbCode.Items.Add("\t\t\t}");
+                lsbCode.Items.Add("\t\t}");
+                lsbCode.Items.Add("\t\tLeft = k;");
+                lsbCode.Items.Add("\t}");
                 lsbCode.Items.Add("}");
             }
         }
@@ -319,6 +536,7 @@ namespace Demo
                 Mc[i].BackColor = Color.LightGreen;
                 System.Threading.Thread.Sleep(speed);
                 DebugCode(4);
+                MoveIndex(lblIndexI, i, Mc[i].Location, 1);
                 for (j = i + 1; j < M.Length; j++)
                 {
                     Mc[j].BackColor = Color.Yellow;
@@ -330,6 +548,7 @@ namespace Demo
                     }
                     System.Threading.Thread.Sleep(speed);
                     DebugCode(5);
+                    MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
                     if (giam == true)
                     {
                         System.Threading.Thread.Sleep(speed);
@@ -354,65 +573,333 @@ namespace Demo
                     }
                     Mc[j].BackColor = Color.White;
                 }
+                Mc[i].BackColor = Color.Red;
             }
             System.Threading.Thread.Sleep(speed);
             DebugCode(1);
         }
 
+        private void MoveIndex(Label lblIndex, int x, Point location, int type)
+        {
+            MoveIndex index = new MoveIndex(lblIndex, x, location, type);
+            backgroundWorker1.ReportProgress(2, index);
+            System.Threading.Thread.Sleep(speed * 30);
+        }
 
-        private void SelectionSort(int[] M, bool giam)
+        private void SelectionSort(int[] M, bool giam, DoWorkEventArgs e)
         {
             int temp, i, j;
-            for (i = 0; i < M.Length; i++)
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(3);
+            for (i = 0; i < M.Length - 1; i++)
             {
+                Mc[i].BackColor = Color.LightGreen;
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(4);
+                MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+
                 temp = i;
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(6);
+                MoveIndex(lblTemp, temp, Mc[temp].Location, 3);
+
                 for (j = i + 1; j < M.Length; j++)
+                {
+                    Mc[j].BackColor = Color.Yellow;
+                    busy.WaitOne();
+                    if (backgroundWorker1.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                    System.Threading.Thread.Sleep(speed);
+                    DebugCode(7);
+                    MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
+
                     if (giam == true)
                     {
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(8);
                         if (M[j] > M[temp])
+                        {
                             temp = j;
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(9);
+                            MoveIndex(lblTemp, temp, Mc[temp].Location, 3);
+                        }
                     }
                     else
                     {
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(8);
                         if (M[j] < M[temp])
+                        {
                             temp = j;
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(9);
+                            MoveIndex(lblTemp, temp, Mc[temp].Location, 3);
+                        }
                     }
+                    Mc[j].BackColor = Color.White;
+                }
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(10);
+                Mc[temp].BackColor = Color.Pink;
                 if (temp != i)
                 {
                     Swap(ref M[temp], ref M[i]);
                     System.Threading.Thread.Sleep(speed);
-                    MoveButton(temp, i,6);
+                    MoveButton(temp, i, 10);
                 }
+                Mc[temp].BackColor = Color.White;
+                Mc[i].BackColor = Color.Red;
             }
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(1);
         }
 
-        private void BubbleSort(int[] M, bool giam)
+        private void BubbleSort(int[] M, bool giam, DoWorkEventArgs e)
         {
             int i, j;
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(3);
             for (i = 0; i < M.Length - 1; i++)
             {
-                
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(4);
+                MoveIndex(lblIndexI, i, Mc[i].Location, 1);
                 for (j = M.Length - 1; j > i; j--)
                 {
-                    if (Giam == true)
+                    busy.WaitOne();
+                    if (backgroundWorker1.CancellationPending)
                     {
+                        e.Cancel = true;
+                        return;
+                    }
+
+                    System.Threading.Thread.Sleep(speed);
+                    DebugCode(5);
+                    MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
+                    Mc[j].BackColor = Color.Yellow;
+                    Mc[j - 1].BackColor = Color.Yellow;
+                   
+                    if (giam)
+                    {
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(6);
+                        MoveIndex(lblTemp, j - 1, Mc[j - 1].Location, 3);
                         if (M[j] > M[j - 1])
                         {
                             Swap(ref M[j], ref M[j - 1]);
                             System.Threading.Thread.Sleep(speed);
-                            MoveButton(j, j - 1,5);
+                            MoveButton(j, j - 1, 7);
                         }
                     }
                     else
                     {
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(6);
+                        MoveIndex(lblTemp, j - 1, Mc[j - 1].Location, 3);
                         if (M[j] < M[j - 1])
                         {
                             Swap(ref M[j], ref M[j - 1]);
                             System.Threading.Thread.Sleep(speed);
-                            MoveButton(j, j - 1,5);
+                            MoveButton(j, j - 1, 7);
                         }
                     }
+                    Mc[j].BackColor = Color.White;
+                    Mc[j - 1].BackColor = Color.White;
                 }
+                Mc[i].BackColor = Color.Red;
+            }
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(1);
+        }
+
+        private void InsertionSort(int[] M, bool giam, DoWorkEventArgs e)
+        {
+            int pos, key;
+            for (int i = 1; i < M.Length; i++)
+            {
+                key = M[i];
+                pos = i - 1;
+                while ((pos >= 0) && (M[pos] > key))
+                {
+                    M[pos + 1] = M[pos]; pos--;
+                }
+                M[pos + 1] = key;
+            }
+        }
+
+        private void QuickSort(int[] M, int left, int right, bool giam, DoWorkEventArgs e)
+        {
+            int i, j, x;
+            x = M[(left + right) / 2];
+            i = left; j = right;
+            if(giam)
+            {
+                while (i < j)
+                {
+                    while (M[i] > x) i++;
+                    while (M[j] < x) j--;
+                    if (i <= j)
+                    {
+                        Swap(ref M[i], ref M[j]);
+                        System.Threading.Thread.Sleep(speed);
+                        if (i != j)
+                            MoveButton(j, i, 0);
+                        i++; j--;
+                    }
+                }
+            }
+            else
+            {
+                while (i < j)
+                {
+                    while (M[i] < x) i++;
+                    while (M[j] > x) j--;
+                    if (i <= j)
+                    {
+                        Swap(ref M[i], ref M[j]);
+                        System.Threading.Thread.Sleep(speed);
+                        if (i != j)
+                            MoveButton(j, i, 0);
+                        i++; j--;
+                    }
+                }
+            }
+            if (left < j)
+                QuickSort(M, left, j, giam, e);
+            if (i < right)
+                QuickSort(M, i, right, giam, e);
+        }
+
+        void ShakerSort(int[] M, bool giam, DoWorkEventArgs e)
+        {
+            int Left = 0, Right = M.Length - 1, k = 0;
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(3);
+            while (Left < Right)
+            {
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(4);
+                for (int i = Right; i > Left; i--)
+                {
+                    strTemp = "i-1=";
+                    busy.WaitOne();
+                    if (backgroundWorker1.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+
+                    System.Threading.Thread.Sleep(speed);
+                    DebugCode(6);
+                    
+                    Mc[i].BackColor = Color.Yellow;
+                    Mc[i - 1].BackColor = Color.Yellow;
+
+                    MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+                    MoveIndex(lblTemp, i - 1, Mc[i - 1].Location, 3);
+
+                    if (giam)
+                    {
+                        if (M[i] > M[i - 1])
+                        {
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(8);
+
+                            Swap(ref M[i], ref M[i - 1]);
+                            MoveButton(i, i - 1, 10);
+
+                            k = i;
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(11);
+                        }
+                    }
+                    else
+                    {
+                        if (M[i] < M[i - 1])
+                        {
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(8);
+
+                            Swap(ref M[i], ref M[i - 1]);
+                            MoveButton(i, i - 1, 10);
+
+                            k = i;
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(11);
+                        }
+                    }
+                    Mc[i].BackColor = Color.White;
+                    Mc[i - 1].BackColor = Color.White;
+                }
+
+                Mc[k - 1].BackColor = Color.Red;
+
+                Left = k;
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(14);
+
+                for (int i = Left; i < Right; i++)
+                {
+                    strTemp = "i+1=";
+                    busy.WaitOne();
+                    if (backgroundWorker1.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+
+                    System.Threading.Thread.Sleep(speed);
+                    DebugCode(15);
+
+                    Mc[i].BackColor = Color.Pink;
+                    Mc[i + 1].BackColor = Color.Pink;
+
+                    MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+                    MoveIndex(lblTemp, i + 1, Mc[i + 1].Location, 3);
+
+                    if (giam)
+                    {
+                        if (M[i] < M[i + 1])
+                        {
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(17);
+
+                            Swap(ref M[i], ref M[i + 1]);
+                            MoveButton(i + 1, i, 19);
+
+                            k = i;
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(20);
+                        }
+                    }
+                    else
+                    {
+                        if (M[i] > M[i + 1])
+                        {
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(17);
+
+                            Swap(ref M[i], ref M[i + 1]);
+                            MoveButton(i + 1, i, 19);
+
+                            k = i;
+                            System.Threading.Thread.Sleep(speed);
+                            DebugCode(20);
+                        }
+                    }
+                    Mc[i].BackColor = Color.White;
+                    Mc[i + 1].BackColor = Color.White;
+                }
+
+                Mc[k + 1].BackColor = Color.Red;
+
+                Right = k;
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(23);
             }
         }
         #endregion
@@ -421,14 +908,23 @@ namespace Demo
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
+            bool Giam = false;//kiểm tra thuật toán đó thực hiện tăng hay giảm
+
             if ((int)radTangGiam.EditValue == 0) Giam = false;
             else if((int)radTangGiam.EditValue == 1) Giam = true;
+
             if ((int)radThuatToan.EditValue == 0)
                 InterchangeSort(M, Giam, e);
             else if ((int)radThuatToan.EditValue == 1)
-                SelectionSort(M, Giam);
+                SelectionSort(M, Giam, e);
             else if ((int)radThuatToan.EditValue == 2)
-                BubbleSort(M, Giam);
+                BubbleSort(M, Giam, e);
+            else if ((int)radThuatToan.EditValue == 3)
+                InsertionSort(M, Giam, e);
+            else if ((int)radThuatToan.EditValue == 4)
+                QuickSort(M, 0, M.Length - 1, Giam, e);
+            else if ((int)radThuatToan.EditValue == 5)
+                ShakerSort(M, Giam, e);
             if (backgroundWorker1.CancellationPending)
             {
                 e.Cancel = true;
@@ -437,10 +933,30 @@ namespace Demo
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            int i;
-            if (int.TryParse(e.UserState.ToString(), out i))
+            if (e.ProgressPercentage == 1)
             {
+                int i = int.Parse(e.UserState.ToString());
                 lsbCode.SelectedIndex = i;
+            }
+            else if(e.ProgressPercentage == 2)
+            {
+                MoveIndex moveIndex = e.UserState as MoveIndex;
+
+                if (moveIndex.Type == 1)
+                {
+                    moveIndex.lbl.Text = "i=" + moveIndex.Index;
+                    moveIndex.lbl.Location = new Point(moveIndex.Location.X + SIZE / 2 - 10, moveIndex.Location.Y + HEIGHT + (int)(SIZE * 1.5));
+                }
+                else if(moveIndex.Type == 2)
+                {
+                    moveIndex.lbl.Text = "j=" + moveIndex.Index;
+                    moveIndex.lbl.Location = new Point(moveIndex.Location.X + SIZE / 2 - 10, moveIndex.Location.Y - HEIGHT - SIZE);
+                }
+                else
+                {
+                    moveIndex.lbl.Text = strTemp + moveIndex.Index;
+                    moveIndex.lbl.Location = new Point(moveIndex.Location.X + 10, moveIndex.Location.Y + HEIGHT + SIZE);
+                }
             }
             else
             {
@@ -448,11 +964,12 @@ namespace Demo
                 if (st == null) return;
                 if (st.Type == MoveType.CHANGED)
                 {
-                    Mc[st.pos2].BackColor = Color.White;
-                    Mc[st.pos1].BackColor = Color.LightGreen;
+                    Color colortmp = Mc[st.pos1].BackColor;
                     Button btnTmp = Mc[st.pos2];
                     Mc[st.pos2] = Mc[st.pos1];
+                    Mc[st.pos2].BackColor = btnTmp.BackColor;
                     Mc[st.pos1] = btnTmp;
+                    Mc[st.pos1].BackColor = colortmp;
                     return;
                 }
                 Button btn1 = Mc[st.pos1];
@@ -477,11 +994,18 @@ namespace Demo
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            foreach (Button btn in pnButton.Controls)
+            foreach (Button btn in Mc)
             {
                 btn.BackColor = Color.Red;
                 btn.ForeColor = Color.White;
             }
+
+            pnButton.Controls.Remove(lblIndexI);
+            pnButton.Controls.Remove(lblIndexJ);
+            
+            //if(radThuatToan.SelectedIndex == 1 || radThuatToan.SelectedIndex == 2)
+                pnButton.Controls.Remove(lblTemp);
+
             btnStart.Enabled = true;
             btnPause.Enabled = false;
             btnStop.Enabled = false;
@@ -489,6 +1013,8 @@ namespace Demo
             grpDuLieu.Enabled = true;
             grpThuatToan.Enabled = true;
             grpHuongSapXep.Enabled = true;
+            if (e.Cancelled == true) return;
+            MessageBox.Show("Đã sắp xếp xong mảng!");
         }
 
         #endregion

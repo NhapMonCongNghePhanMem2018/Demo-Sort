@@ -29,10 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.panelControl1 = new DevExpress.XtraEditors.PanelControl();
-            this.groupControl8 = new DevExpress.XtraEditors.GroupControl();
-            this.pnButton = new DevExpress.Utils.FlyoutPanelControl();
             this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            this.defaultLookAndFeel1 = new DevExpress.LookAndFeel.DefaultLookAndFeel(this.components);
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.panelControl2 = new DevExpress.XtraEditors.PanelControl();
             this.panel2 = new System.Windows.Forms.Panel();
             this.grpCode = new DevExpress.XtraEditors.GroupControl();
@@ -63,13 +62,8 @@
             this.trackbarSpeed = new DevExpress.XtraEditors.TrackBarControl();
             this.grpHuongSapXep = new DevExpress.XtraEditors.GroupControl();
             this.radTangGiam = new DevExpress.XtraEditors.RadioGroup();
-            this.defaultLookAndFeel1 = new DevExpress.LookAndFeel.DefaultLookAndFeel(this.components);
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).BeginInit();
-            this.panelControl1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.groupControl8)).BeginInit();
-            this.groupControl8.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pnButton)).BeginInit();
+            this.groupControl8 = new DevExpress.XtraEditors.GroupControl();
+            this.pnButton = new DevExpress.Utils.FlyoutPanelControl();
             ((System.ComponentModel.ISupportInitialize)(this.panelControl2)).BeginInit();
             this.panelControl2.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -98,53 +92,39 @@
             ((System.ComponentModel.ISupportInitialize)(this.grpHuongSapXep)).BeginInit();
             this.grpHuongSapXep.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.radTangGiam.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl8)).BeginInit();
+            this.groupControl8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pnButton)).BeginInit();
             this.SuspendLayout();
-            // 
-            // panelControl1
-            // 
-            this.panelControl1.Controls.Add(this.groupControl8);
-            this.panelControl1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelControl1.Location = new System.Drawing.Point(0, 0);
-            this.panelControl1.Margin = new System.Windows.Forms.Padding(4);
-            this.panelControl1.Name = "panelControl1";
-            this.panelControl1.Size = new System.Drawing.Size(1350, 404);
-            this.panelControl1.TabIndex = 1;
-            // 
-            // groupControl8
-            // 
-            this.groupControl8.Controls.Add(this.pnButton);
-            this.groupControl8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupControl8.Location = new System.Drawing.Point(2, 2);
-            this.groupControl8.Name = "groupControl8";
-            this.groupControl8.Size = new System.Drawing.Size(1346, 400);
-            this.groupControl8.TabIndex = 0;
-            this.groupControl8.Text = "Khung Mô Phỏng";
-            // 
-            // pnButton
-            // 
-            this.pnButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnButton.FlyoutPanel = null;
-            this.pnButton.Location = new System.Drawing.Point(2, 27);
-            this.pnButton.Name = "pnButton";
-            this.pnButton.Size = new System.Drawing.Size(1342, 371);
-            this.pnButton.TabIndex = 0;
             // 
             // ribbonPage2
             // 
             this.ribbonPage2.Name = "ribbonPage2";
             this.ribbonPage2.Text = "ribbonPage2";
             // 
+            // defaultLookAndFeel1
+            // 
+            this.defaultLookAndFeel1.LookAndFeel.SkinName = "Glass Oceans";
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // panelControl2
             // 
             this.panelControl2.Controls.Add(this.panel2);
             this.panelControl2.Controls.Add(this.grpDuLieu);
             this.panelControl2.Controls.Add(this.panel1);
-            this.panelControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelControl2.Location = new System.Drawing.Point(0, 404);
+            this.panelControl2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelControl2.Location = new System.Drawing.Point(0, 466);
             this.panelControl2.Margin = new System.Windows.Forms.Padding(4);
             this.panelControl2.Name = "panelControl2";
             this.panelControl2.Size = new System.Drawing.Size(1350, 318);
-            this.panelControl2.TabIndex = 0;
+            this.panelControl2.TabIndex = 2;
             // 
             // panel2
             // 
@@ -197,8 +177,9 @@
             new DevExpress.XtraEditors.Controls.RadioGroupItem(0, "Interchange Sort"),
             new DevExpress.XtraEditors.Controls.RadioGroupItem(1, "Selection Sort"),
             new DevExpress.XtraEditors.Controls.RadioGroupItem(2, "Bubble Sort"),
-            new DevExpress.XtraEditors.Controls.RadioGroupItem(3, "Quick Sort"),
-            new DevExpress.XtraEditors.Controls.RadioGroupItem(4, "Binary Selection Sort")});
+            new DevExpress.XtraEditors.Controls.RadioGroupItem(3, "Insertion Sort"),
+            new DevExpress.XtraEditors.Controls.RadioGroupItem(4, "Quick Sort"),
+            new DevExpress.XtraEditors.Controls.RadioGroupItem(5, "Shaker Sort")});
             this.radThuatToan.Size = new System.Drawing.Size(294, 285);
             this.radThuatToan.TabIndex = 0;
             this.radThuatToan.SelectedIndexChanged += new System.EventHandler(this.radThuatToan_SelectedIndexChanged);
@@ -472,17 +453,24 @@
             this.radTangGiam.TabIndex = 0;
             this.radTangGiam.SelectedIndexChanged += new System.EventHandler(this.radTangGiam_SelectedIndexChanged);
             // 
-            // defaultLookAndFeel1
+            // groupControl8
             // 
-            this.defaultLookAndFeel1.LookAndFeel.SkinName = "Glass Oceans";
+            this.groupControl8.Controls.Add(this.pnButton);
+            this.groupControl8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupControl8.Location = new System.Drawing.Point(0, 0);
+            this.groupControl8.Name = "groupControl8";
+            this.groupControl8.Size = new System.Drawing.Size(1350, 466);
+            this.groupControl8.TabIndex = 3;
+            this.groupControl8.Text = "Khung Mô Phỏng";
             // 
-            // backgroundWorker1
+            // pnButton
             // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            this.pnButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnButton.FlyoutPanel = null;
+            this.pnButton.Location = new System.Drawing.Point(2, 27);
+            this.pnButton.Name = "pnButton";
+            this.pnButton.Size = new System.Drawing.Size(1346, 437);
+            this.pnButton.TabIndex = 0;
             // 
             // frmMain
             // 
@@ -491,9 +479,9 @@
             this.Appearance.Options.UseFont = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1350, 722);
+            this.ClientSize = new System.Drawing.Size(1350, 784);
+            this.Controls.Add(this.groupControl8);
             this.Controls.Add(this.panelControl2);
-            this.Controls.Add(this.panelControl1);
             this.Font = new System.Drawing.Font("Tahoma", 10F);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
@@ -502,11 +490,6 @@
             this.Text = "Phần Mềm Mô Phỏng Các Thuật Tóa Sắp Xếp";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).EndInit();
-            this.panelControl1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.groupControl8)).EndInit();
-            this.groupControl8.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pnButton)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelControl2)).EndInit();
             this.panelControl2.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
@@ -538,48 +521,49 @@
             ((System.ComponentModel.ISupportInitialize)(this.grpHuongSapXep)).EndInit();
             this.grpHuongSapXep.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.radTangGiam.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl8)).EndInit();
+            this.groupControl8.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pnButton)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private DevExpress.XtraEditors.PanelControl panelControl1;
         private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage2;
+        private DevExpress.LookAndFeel.DefaultLookAndFeel defaultLookAndFeel1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private DevExpress.XtraEditors.PanelControl panelControl2;
+        private System.Windows.Forms.Panel panel2;
         private DevExpress.XtraEditors.GroupControl grpCode;
+        private DevExpress.XtraEditors.ListBoxControl lsbCode;
         private DevExpress.XtraEditors.GroupControl grpThuatToan;
         private DevExpress.XtraEditors.RadioGroup radThuatToan;
-        private DevExpress.XtraEditors.RadioGroup radTangGiam;
-        private DevExpress.LookAndFeel.DefaultLookAndFeel defaultLookAndFeel1;
-        private DevExpress.XtraEditors.PanelControl panelControl4;
-        private DevExpress.XtraEditors.GroupControl grpTocDo;
-        private DevExpress.XtraEditors.TrackBarControl trackbarSpeed;
-        private DevExpress.XtraEditors.SimpleButton btnStart;
-        private DevExpress.XtraEditors.GroupControl groupControl8;
-        private DevExpress.Utils.FlyoutPanelControl pnButton;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private DevExpress.XtraEditors.SimpleButton btnPause;
-        private System.Windows.Forms.Label lblSpeed;
         private DevExpress.XtraEditors.GroupControl grpDuLieu;
         private DevExpress.XtraEditors.GroupControl groupControl6;
+        private System.Windows.Forms.TextBox txtGiaTri;
+        private System.Windows.Forms.NumericUpDown nmIndex;
+        private DevExpress.XtraEditors.LabelControl labelControl3;
+        private DevExpress.XtraEditors.LabelControl labelControl2;
         private DevExpress.XtraEditors.SimpleButton btnNhapTay;
         private DevExpress.XtraEditors.SimpleButton btnRandom;
         private DevExpress.XtraEditors.GroupControl groupControl5;
+        private System.Windows.Forms.NumericUpDown nmSoPhanTu;
         private DevExpress.XtraEditors.SimpleButton btnTaoMang;
         private DevExpress.XtraEditors.SimpleButton btnXoaMang;
         private DevExpress.XtraEditors.LabelControl labelControl1;
         private System.Windows.Forms.Panel panel1;
-        private DevExpress.XtraEditors.GroupControl grpHuongSapXep;
-        private DevExpress.XtraEditors.SidePanel sidePanel1;
-        private System.Windows.Forms.Panel panel2;
+        private DevExpress.XtraEditors.PanelControl panelControl4;
         private DevExpress.XtraEditors.SimpleButton btnStop;
-        private DevExpress.XtraEditors.ListBoxControl lsbCode;
-        private DevExpress.XtraEditors.LabelControl labelControl3;
-        private DevExpress.XtraEditors.LabelControl labelControl2;
-        private System.Windows.Forms.NumericUpDown nmSoPhanTu;
-        private System.Windows.Forms.NumericUpDown nmIndex;
-        private System.Windows.Forms.TextBox txtGiaTri;
+        private DevExpress.XtraEditors.SimpleButton btnPause;
+        private DevExpress.XtraEditors.SimpleButton btnStart;
+        private DevExpress.XtraEditors.SidePanel sidePanel1;
+        private DevExpress.XtraEditors.GroupControl grpTocDo;
+        private System.Windows.Forms.Label lblSpeed;
+        private DevExpress.XtraEditors.TrackBarControl trackbarSpeed;
+        private DevExpress.XtraEditors.GroupControl grpHuongSapXep;
+        private DevExpress.XtraEditors.RadioGroup radTangGiam;
+        private DevExpress.XtraEditors.GroupControl groupControl8;
+        private DevExpress.Utils.FlyoutPanelControl pnButton;
     }
 }
 

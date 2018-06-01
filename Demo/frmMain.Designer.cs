@@ -256,7 +256,7 @@
             // 
             this.btnNhapTay.Appearance.Font = new System.Drawing.Font("Tahoma", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNhapTay.Appearance.Options.UseFont = true;
-            this.btnNhapTay.Location = new System.Drawing.Point(188, 46);
+            this.btnNhapTay.Location = new System.Drawing.Point(189, 46);
             this.btnNhapTay.Name = "btnNhapTay";
             this.btnNhapTay.Size = new System.Drawing.Size(98, 38);
             this.btnNhapTay.TabIndex = 1;

@@ -31,7 +31,9 @@ namespace Demo
         Label lblIndexI = new Label();
         Label lblIndexJ = new Label();
         Label lblTemp = new Label();
-        string strTemp;
+        string lblTemp_Text;
+        string lblIndexI_Text;
+        string lblIndexJ_Text;
 
 
 
@@ -131,10 +133,10 @@ namespace Demo
             }
             for (int i = 0; i < M.Length; i++)
             {
+                Mc[i].BackColor = Color.White;
                 int value = rd.Next(100);
                 M[i] = value;
                 Mc[i].Text = value + "";
-                Mc[i].BackColor = Color.White;
             }
         }
 
@@ -146,7 +148,7 @@ namespace Demo
                 MessageBox.Show("Vui lòng tạo mảng trước để thực hiện chức năng này!");
                 return;
             }
-            if (txtGiaTri.Text == "") ;
+            if (txtGiaTri.Text == "")
             {
                 MessageBox.Show("Bạn chưa nhập giá trị :3");
                 return;
@@ -206,29 +208,53 @@ namespace Demo
             {
                 pnButton.Controls.Add(lblIndexI);
                 pnButton.Controls.Add(lblIndexJ);
+                lblIndexI_Text = "i=";
+                lblIndexJ_Text = "j=";
             }
             else if (radThuatToan.SelectedIndex == 1)
             {
                 pnButton.Controls.Add(lblIndexI);
                 pnButton.Controls.Add(lblIndexJ);
                 pnButton.Controls.Add(lblTemp);
+                lblIndexI_Text = "i=";
+                lblIndexJ_Text = "j=";
                 if (radTangGiam.SelectedIndex == 0)
-                    strTemp = "Max=";
+                    lblTemp_Text = "Max=";
                 else
-                    strTemp = "Min=";
+                    lblTemp_Text = "Min=";
             }
             else if (radThuatToan.SelectedIndex == 2)
             {
                 pnButton.Controls.Add(lblIndexI);
                 pnButton.Controls.Add(lblIndexJ);
                 pnButton.Controls.Add(lblTemp);
-                strTemp = "j-1=";
+                lblIndexI_Text = "i=";
+                lblIndexJ_Text = "j=";
+                lblTemp_Text = "j-1=";
+            }
+            else if (radThuatToan.SelectedIndex == 3)
+            {
+                pnButton.Controls.Add(lblIndexJ);
+                pnButton.Controls.Add(lblTemp);
+                lblIndexJ_Text = "pos=";
+                lblTemp_Text = "Key";
+            }
+            else if (radThuatToan.SelectedIndex == 4)
+            {
+                pnButton.Controls.Add(lblIndexI);
+                pnButton.Controls.Add(lblIndexJ);
+                pnButton.Controls.Add(lblTemp);
+                lblIndexI_Text = "i=";
+                lblIndexJ_Text = "j=";
+                lblTemp_Text = "x=";
             }
             else if (radThuatToan.SelectedIndex == 5)
             {
                 pnButton.Controls.Add(lblIndexI);
                 pnButton.Controls.Add(lblTemp);
-                strTemp = "j-1=";
+                lblIndexI_Text = "i=";
+                lblIndexJ_Text = "j=";
+                lblTemp_Text = "";
             }
             PlaySound();
             if (backgroundWorker1.CancellationPending)
@@ -300,13 +326,13 @@ namespace Demo
             busy.Reset();
         }
 
-        private void MoveButton(int pos1, int pos2, int v)
+        private void MoveButton(int pos1, int pos2, int index)
         {
             Status st = new Status();
             st.pos1 = pos1;
             st.pos2 = pos2;
             st.Type = MoveType.LINE_TO_TOP_AND_LINE_TO_BOTTOM;
-            DebugCode(v);
+            DebugCode(index);
             for (int x = 0; x < HEIGHT; x++)
             {
                 backgroundWorker1.ReportProgress(3, st);
@@ -332,10 +358,68 @@ namespace Demo
             backgroundWorker1.ReportProgress(3, st);
         }
 
+        private void MoveButton_2(int pos1, int pos2, int type,int index)
+        {
+            Status st = new Status();
+            st.pos1 = pos1;
+            st.pos2 = pos2;
+            DebugCode(index);
+            if (type == 0)
+            {
+                st.Type = MoveType.LINE_TO_TOP;
+                for (int x = 0; x < HEIGHT; x++)
+                {
+                    backgroundWorker1.ReportProgress(0, st);
+                    System.Threading.Thread.Sleep(speed);
+                }
+                st.Type = MoveType.EXCHANGED;
+                backgroundWorker1.ReportProgress(3, st);
+            }
+            else if (type == 1)
+            {
+                st.Type = MoveType.LEFT_TO_RIGHT;
+                WIDTH = Math.Abs(pos1 - pos2) * (SIZE + GAP);
+                for (int x = 0; x < WIDTH; x++)
+                {
+                    backgroundWorker1.ReportProgress(3, st);
+                    System.Threading.Thread.Sleep(speed);
+                }
+                st.Type = MoveType.EXCHANGED;
+                backgroundWorker1.ReportProgress(3, st);
+            }
+            else if (type == 2)
+            {
+                st.Type = MoveType.RIGHT_TO_LEFT;
+                WIDTH = Math.Abs(pos1 - pos2) * (SIZE + GAP);
+                for (int x = 0; x < WIDTH; x++)
+                {
+                    backgroundWorker1.ReportProgress(3, st);
+                    System.Threading.Thread.Sleep(speed);
+                }
+
+                st.Type = MoveType.TOP_TO_LINE;
+                for (int x = 0; x < HEIGHT; x++)
+                {
+                    backgroundWorker1.ReportProgress(3, st);
+                    System.Threading.Thread.Sleep(speed);
+                }
+
+                st.Type = MoveType.DONE;
+                backgroundWorker1.ReportProgress(3, st);
+            }
+        }
+
         private void DebugCode(int v)
         {
             backgroundWorker1.ReportProgress(1, v);
             System.Threading.Thread.Sleep(speed * 20);
+        }
+
+        private void MoveIndex(Label lblIndex, int x, Point location, int type)
+        {
+            MoveIndex index = new MoveIndex(lblIndex, x, location, type);
+            backgroundWorker1.ReportProgress(2, index);
+            System.Threading.Thread.Sleep(speed * 30);
         }
 
         private void NapCodeLenListBox(int thuatToan, int tangGiam)
@@ -420,14 +504,19 @@ namespace Demo
                 lsbCode.Items.Add("{");
                 lsbCode.Items.Add("\tint pos,key;");
                 lsbCode.Items.Add("\tfor(int i=1;i<n;i++)");
-                lsbCode.Items.Add("\t{)");
-                lsbCode.Items.Add("\t\tkey = M[i];)");
-                lsbCode.Items.Add("\t\twhile((pos >= 0) && (M[pos] > key))");
+                lsbCode.Items.Add("\t{");
+                lsbCode.Items.Add("\t\tkey = M[i];");
+                lsbCode.Items.Add("\t\tpos = i - 1;");
+                if (tangGiam == 0)
+                    lsbCode.Items.Add("\t\twhile((pos >= 0) && (M[pos] > key))");
+                else
+                    lsbCode.Items.Add("\t\twhile((pos >= 0) && (M[pos] < key))");
                 lsbCode.Items.Add("\t\t{");
                 lsbCode.Items.Add("\t\t\tM[pos + 1] = M[pos];");
                 lsbCode.Items.Add("\t\t\tpos--; ");
                 lsbCode.Items.Add("\t\t}");
                 lsbCode.Items.Add("\t\tM[pos+1] = key; ");
+                lsbCode.Items.Add("\t}");
                 lsbCode.Items.Add("}");
             }
             else if (thuatToan == 4)
@@ -436,8 +525,7 @@ namespace Demo
                 lsbCode.Items.Add("{");
                 lsbCode.Items.Add("\tint i, j, x;");
                 lsbCode.Items.Add("\tx = M[(left + right) / 2];");
-                lsbCode.Items.Add("\ti = left;");
-                lsbCode.Items.Add("\tj = right;");
+                lsbCode.Items.Add("\ti = left, j = right;");
                 if (tangGiam == 0)
                 {
                     lsbCode.Items.Add("\twhile(i < j)");
@@ -579,13 +667,6 @@ namespace Demo
             DebugCode(1);
         }
 
-        private void MoveIndex(Label lblIndex, int x, Point location, int type)
-        {
-            MoveIndex index = new MoveIndex(lblIndex, x, location, type);
-            backgroundWorker1.ReportProgress(2, index);
-            System.Threading.Thread.Sleep(speed * 30);
-        }
-
         private void SelectionSort(int[] M, bool giam, DoWorkEventArgs e)
         {
             int temp, i, j;
@@ -719,36 +800,153 @@ namespace Demo
         private void InsertionSort(int[] M, bool giam, DoWorkEventArgs e)
         {
             int pos, key;
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(3);
             for (int i = 1; i < M.Length; i++)
             {
-                key = M[i];
-                pos = i - 1;
-                while ((pos >= 0) && (M[pos] > key))
+                busy.WaitOne();
+                if (backgroundWorker1.CancellationPending)
                 {
-                    M[pos + 1] = M[pos]; pos--;
+                    e.Cancel = true;
+                    return;
                 }
+
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(4);
+                MoveIndex(lblTemp, i, Mc[i].Location, 4);
+
+                key = M[i];
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(6);
+                MoveButton_2(i, 0, 0, 6);
+                
+
+                pos = i - 1;
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(7);
+                MoveIndex(lblIndexJ, pos, Mc[pos].Location, 2);
+
+                if (giam)
+                {
+                    while ((pos >= 0) && (M[pos] < key))
+                    {
+                        busy.WaitOne();
+                        if (backgroundWorker1.CancellationPending)
+                        {
+                            e.Cancel = true;
+                            return;
+                        }
+
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(8);
+                        MoveIndex(lblIndexJ, pos, Mc[pos].Location, 2);
+
+                        M[pos + 1] = M[pos];
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(10);
+                        MoveButton_2(pos, pos + 1, 1, 10);
+
+                        pos--;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(11);
+                    }
+                }
+                else
+                {
+                    while ((pos >= 0) && (M[pos] > key))
+                    {
+                        busy.WaitOne();
+                        if (backgroundWorker1.CancellationPending)
+                        {
+                            e.Cancel = true;
+                            return;
+                        }
+
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(8);
+                        MoveIndex(lblIndexJ, pos, Mc[pos].Location, 2);
+
+                        M[pos + 1] = M[pos];
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(10);
+                        MoveButton_2(pos, pos + 1, 1, 10);
+
+                        pos--;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(11);
+                    }
+                }
+
                 M[pos + 1] = key;
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(13);
+                MoveButton_2(i, pos + 1, 2, 13);
             }
         }
 
         private void QuickSort(int[] M, int left, int right, bool giam, DoWorkEventArgs e)
         {
             int i, j, x;
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(3);
             x = M[(left + right) / 2];
+            Mc[(left + right) / 2].BackColor = Color.Red;
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(4);
+            MoveIndex(lblTemp, (left + right) / 2, Mc[(left + right) / 2].Location, 3);
             i = left; j = right;
-            if(giam)
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(5);
+            MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+            MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
+            Mc[i].BackColor = Color.Yellow;
+            Mc[j].BackColor = Color.Yellow;
+            if (giam)
             {
                 while (i < j)
                 {
-                    while (M[i] > x) i++;
-                    while (M[j] < x) j--;
+                    System.Threading.Thread.Sleep(speed);
+                    DebugCode(6);
+                    while (M[i] > x)
+                    {
+                        System.Threading.Thread.Sleep(speed * 20);
+                        Mc[i].BackColor = Color.White;
+                        i++;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(8);
+                        MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+                        Mc[i].BackColor = Color.Yellow;
+                    }
+                    while (M[j] < x)
+                    {
+                        System.Threading.Thread.Sleep(speed * 20);
+                        Mc[j].BackColor = Color.White;
+                        j--;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(9);
+                        MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
+                        Mc[j].BackColor = Color.Yellow;
+                    }
                     if (i <= j)
                     {
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(10);
                         Swap(ref M[i], ref M[j]);
                         System.Threading.Thread.Sleep(speed);
-                        if (i != j)
-                            MoveButton(j, i, 0);
+                        MoveButton(j, i, 12);
+                        Mc[i].BackColor = Color.White;
+                        Mc[j].BackColor = Color.White;
                         i++; j--;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(13);
+                        if (j >= 0)
+                        {
+                            MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
+                        }
+                        if (i < M.Length)
+                        {
+                            MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+                        }
                     }
                 }
             }
@@ -756,25 +954,66 @@ namespace Demo
             {
                 while (i < j)
                 {
-                    while (M[i] < x) i++;
-                    while (M[j] > x) j--;
+                    System.Threading.Thread.Sleep(speed);
+                    DebugCode(6);
+                    while (M[i] < x)
+                    {
+                        System.Threading.Thread.Sleep(speed * 20);
+                        Mc[i].BackColor = Color.White;
+                        i++;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(8);
+                        MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+                        Mc[i].BackColor = Color.Yellow;
+                    }
+                    while (M[j] > x)
+                    {
+                        System.Threading.Thread.Sleep(speed * 20);
+                        Mc[j].BackColor = Color.White;
+                        j--;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(9);
+                        MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
+                        Mc[j].BackColor = Color.Yellow;
+                    }
                     if (i <= j)
                     {
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(10);
                         Swap(ref M[i], ref M[j]);
                         System.Threading.Thread.Sleep(speed);
-                        if (i != j)
-                            MoveButton(j, i, 0);
+                        MoveButton(j, i, 12);
+                        Mc[i].BackColor = Color.White;
+                        Mc[j].BackColor = Color.White;
                         i++; j--;
+                        System.Threading.Thread.Sleep(speed);
+                        DebugCode(13);
+                        if (j >= 0)
+                        {
+                            MoveIndex(lblIndexJ, j, Mc[j].Location, 2);
+                        }
+                        if (i < M.Length)
+                        {
+                            MoveIndex(lblIndexI, i, Mc[i].Location, 1);
+                        }
                     }
                 }
             }
             if (left < j)
+            {
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(16);
                 QuickSort(M, left, j, giam, e);
+            }
             if (i < right)
+            {
+                System.Threading.Thread.Sleep(speed);
+                DebugCode(18);
                 QuickSort(M, i, right, giam, e);
+            }
         }
 
-        void ShakerSort(int[] M, bool giam, DoWorkEventArgs e)
+        private void ShakerSort(int[] M, bool giam, DoWorkEventArgs e)
         {
             int Left = 0, Right = M.Length - 1, k = 0;
             System.Threading.Thread.Sleep(speed);
@@ -785,7 +1024,7 @@ namespace Demo
                 DebugCode(4);
                 for (int i = Right; i > Left; i--)
                 {
-                    strTemp = "i-1=";
+                    lblTemp_Text = "i-1=";
                     busy.WaitOne();
                     if (backgroundWorker1.CancellationPending)
                     {
@@ -844,7 +1083,7 @@ namespace Demo
 
                 for (int i = Left; i < Right; i++)
                 {
-                    strTemp = "i+1=";
+                    lblTemp_Text = "i+1=";
                     busy.WaitOne();
                     if (backgroundWorker1.CancellationPending)
                     {
@@ -901,6 +1140,8 @@ namespace Demo
                 System.Threading.Thread.Sleep(speed);
                 DebugCode(23);
             }
+            System.Threading.Thread.Sleep(speed);
+            DebugCode(1);
         }
         #endregion
 
@@ -944,18 +1185,23 @@ namespace Demo
 
                 if (moveIndex.Type == 1)
                 {
-                    moveIndex.lbl.Text = "i=" + moveIndex.Index;
+                    moveIndex.lbl.Text = lblIndexI_Text + moveIndex.Index;
                     moveIndex.lbl.Location = new Point(moveIndex.Location.X + SIZE / 2 - 10, moveIndex.Location.Y + HEIGHT + (int)(SIZE * 1.5));
                 }
                 else if(moveIndex.Type == 2)
                 {
-                    moveIndex.lbl.Text = "j=" + moveIndex.Index;
+                    moveIndex.lbl.Text = lblIndexJ_Text + moveIndex.Index;
                     moveIndex.lbl.Location = new Point(moveIndex.Location.X + SIZE / 2 - 10, moveIndex.Location.Y - HEIGHT - SIZE);
                 }
-                else
+                else if(moveIndex.Type == 3)
                 {
-                    moveIndex.lbl.Text = strTemp + moveIndex.Index;
+                    moveIndex.lbl.Text = lblTemp_Text + moveIndex.Index;
                     moveIndex.lbl.Location = new Point(moveIndex.Location.X + 10, moveIndex.Location.Y + HEIGHT + SIZE);
+                }
+                else if(moveIndex.Type==4)
+                {
+                    moveIndex.lbl.Text = lblTemp_Text;
+                    moveIndex.lbl.Location = new Point(moveIndex.Location.X + 10, moveIndex.Location.Y + HEIGHT + (int)(SIZE * 1.5));
                 }
             }
             else
@@ -970,6 +1216,39 @@ namespace Demo
                     Mc[st.pos2].BackColor = btnTmp.BackColor;
                     Mc[st.pos1] = btnTmp;
                     Mc[st.pos1].BackColor = colortmp;
+                    return;
+                }
+                else if (st.Type == MoveType.DONE)
+                {
+                    for(int i =0;i<Mc.Length;i++)
+                    {
+                        pnButton.Controls.Remove(Mc[i]);
+                    }
+
+                    int n = (int)nmSoPhanTu.Value;
+                    int Edge = (pnButton.Width - (n * (SIZE + GAP))) / 2;
+
+                    for (int i = 0; i < M.Length; i++)
+                    {
+                        Button btn = new Button();
+                        int value = rd.Next(100);
+                        btn.Enabled = false;
+                        btn.Text = M[i] + "";
+                        btn.BackColor = Color.White;
+                        btn.Width = btn.Height = SIZE;
+                        btn.Location = new Point(i * (btn.Width + GAP) + Edge,
+                                                 pnButton.Height / 2 - SIZE / 2);
+                        btn.Tag = i;
+                        pnButton.Controls.Add(btn);
+
+                        Mc[i] = btn;
+                        btn.Tag = M[i];
+                    }
+
+                    return;
+                }
+                else if (st.Type == MoveType.EXCHANGED)
+                {
                     return;
                 }
                 Button btn1 = Mc[st.pos1];
@@ -988,6 +1267,23 @@ namespace Demo
                 {
                     btn1.Top = btn1.Top - 1;
                     btn2.Top = btn2.Top + 1;
+                }
+                else if (st.Type == MoveType.LINE_TO_TOP)
+                {
+                    btn1.Top = btn1.Top + 1;
+                }
+
+                else if (st.Type == MoveType.LEFT_TO_RIGHT)
+                {
+                    btn1.Left = btn1.Left + 1;
+                }
+                else if (st.Type == MoveType.RIGHT_TO_LEFT)
+                {
+                    btn1.Left = btn1.Left - 1;
+                }
+                else if (st.Type == MoveType.TOP_TO_LINE)
+                {
+                    btn1.Top = btn1.Top - 1;
                 }
             }
         }

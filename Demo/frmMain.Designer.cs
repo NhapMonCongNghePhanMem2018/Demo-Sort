@@ -179,7 +179,8 @@
             new DevExpress.XtraEditors.Controls.RadioGroupItem(2, "Bubble Sort"),
             new DevExpress.XtraEditors.Controls.RadioGroupItem(3, "Insertion Sort"),
             new DevExpress.XtraEditors.Controls.RadioGroupItem(4, "Quick Sort"),
-            new DevExpress.XtraEditors.Controls.RadioGroupItem(5, "Shaker Sort")});
+            new DevExpress.XtraEditors.Controls.RadioGroupItem(5, "Shaker Sort"),
+            new DevExpress.XtraEditors.Controls.RadioGroupItem(6, "Heap Sort")});
             this.radThuatToan.Size = new System.Drawing.Size(294, 285);
             this.radThuatToan.TabIndex = 0;
             this.radThuatToan.SelectedIndexChanged += new System.EventHandler(this.radThuatToan_SelectedIndexChanged);
@@ -256,7 +257,7 @@
             // 
             this.btnNhapTay.Appearance.Font = new System.Drawing.Font("Tahoma", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNhapTay.Appearance.Options.UseFont = true;
-            this.btnNhapTay.Location = new System.Drawing.Point(189, 46);
+            this.btnNhapTay.Location = new System.Drawing.Point(188, 46);
             this.btnNhapTay.Name = "btnNhapTay";
             this.btnNhapTay.Size = new System.Drawing.Size(98, 38);
             this.btnNhapTay.TabIndex = 1;
